@@ -7,7 +7,9 @@ import {
   Settings,
   Command,
   ChevronDown,
+  LogOut,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { mockNotifications } from "@/data/mockUser";
 
 export default function TopBar() {
@@ -63,6 +65,15 @@ export default function TopBar() {
         {/* Settings */}
         <button className="p-2 rounded-lg hover:bg-ag-bg-elevated transition-colors group">
           <Settings className="w-5 h-5 text-ag-text-muted group-hover:text-ag-text-primary transition-colors" />
+        </button>
+
+        {/* Sign Out */}
+        <button 
+          onClick={() => signOut()}
+          className="p-2 rounded-lg hover:bg-ag-loss/20 transition-colors group ml-2 border border-transparent hover:border-ag-loss/30"
+          title="Sign out"
+        >
+          <LogOut className="w-5 h-5 text-ag-text-muted group-hover:text-ag-loss transition-colors" />
         </button>
       </div>
     </header>

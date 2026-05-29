@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   BookOpen,
@@ -61,6 +62,7 @@ const navItems = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <aside
@@ -139,12 +141,12 @@ export default function Sidebar() {
           )}
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-ag-primary to-ag-accent flex items-center justify-center flex-shrink-0 text-xs font-bold text-white">
-            PG
+            {session?.user?.name ? session.user.name.substring(0, 2).toUpperCase() : "U"}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0 animate-fade-in">
               <p className="text-sm font-medium text-ag-text-primary truncate">
-                Prashant Gupta
+                {session?.user?.name || "User"}
               </p>
               <div className="flex items-center gap-1">
                 <Crown className="w-3 h-3 text-ag-warning" />

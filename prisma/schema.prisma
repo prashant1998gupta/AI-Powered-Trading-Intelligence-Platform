@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  subscription   String    @default("Free")
+  joinDate       DateTime  @default(now())
+  
+  accounts       Account[]
+  sessions       Session[]
+  trades         Trade[]
+  insights       Insight[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Trade {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime
+  time        String   // HH:mm format
+  symbol      String
+  instrument  String   // Stocks, Options, Futures
+  sector      String
+  side        String   // BUY, SELL
+  quantity    Int
+  entryPrice  Float
+  exitPrice   Float
+  pnl         Float
+  pnlPercent  Float
+  strategy    String
+  holdingTime String
+  brokerage   Float
+  notes       String?
+  tags        String?  // Stored as comma-separated or JSON string
+  broker      String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model Insight {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // behavioral, performance, risk
+  severity    String   // high, medium, low
+  title       String
+  description String
+  impact      String?
+  suggestion  String?
+  date        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
