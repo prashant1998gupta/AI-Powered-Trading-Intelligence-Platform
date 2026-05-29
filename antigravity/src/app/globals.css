@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+@layer base {
+  :root {
+    --ag-bg-primary: #0a0e1a;
+    --ag-bg-secondary: #111827;
+    --ag-bg-elevated: #1e293b;
+    --ag-primary: #3b82f6;
+    --ag-accent: #06b6d4;
+    --ag-profit: #10b981;
+    --ag-loss: #ef4444;
+    --ag-warning: #f59e0b;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-ag-bg-primary text-ag-text-primary font-sans;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-ag-bg-primary;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ag-bg-elevated rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ag-border-hover;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card */
+  .glass-card {
+    @apply bg-ag-bg-secondary/80 backdrop-blur-xl border border-ag-border rounded-xl;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300;
+  }
+  .glass-card-hover:hover {
+    @apply border-ag-border-hover;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3),
+      0 0 15px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Glow effect buttons */
+  .btn-primary {
+    @apply bg-ag-primary text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300;
+  }
+  .btn-primary:hover {
+    @apply bg-ag-primary-hover;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-secondary {
+    @apply bg-ag-bg-elevated text-ag-text-primary font-semibold px-6 py-3 rounded-lg border border-ag-border transition-all duration-300;
+  }
+  .btn-secondary:hover {
+    @apply bg-ag-bg-hover border-ag-border-hover;
+  }
+
+  .btn-accent {
+    @apply bg-gradient-to-r from-ag-primary to-ag-accent text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300;
+  }
+  .btn-accent:hover {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+    transform: translateY(-1px);
+  }
+
+  /* Input styles */
+  .input-dark {
+    @apply bg-ag-bg-elevated border border-ag-border rounded-lg px-4 py-2.5 text-ag-text-primary placeholder-ag-text-muted transition-all duration-200;
+  }
+  .input-dark:focus {
+    @apply border-ag-primary outline-none ring-1 ring-ag-primary/30;
+  }
+
+  /* Badge styles */
+  .badge-profit {
+    @apply bg-ag-profit-dim text-ag-profit text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .badge-loss {
+    @apply bg-ag-loss-dim text-ag-loss text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .badge-warning {
+    @apply bg-ag-warning-dim text-ag-warning text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+  .badge-info {
+    @apply bg-ag-glow text-ag-primary text-xs font-semibold px-2.5 py-1 rounded-full;
+  }
+
+  /* Section styles */
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-ag-text-secondary bg-clip-text text-transparent;
+  }
+
+  .section-subtitle {
+    @apply text-ag-text-secondary text-lg max-w-2xl;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-ag-primary to-ag-accent bg-clip-text text-transparent;
+  }
+
+  /* Shimmer loading */
+  .shimmer {
+    @apply animate-shimmer;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Grid background */
+  .grid-bg {
+    background-image: linear-gradient(
+        rgba(59, 130, 246, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Dot background */
+  .dot-bg {
+    background-image: radial-gradient(
+      rgba(59, 130, 246, 0.15) 1px,
+      transparent 1px
+    );
+    background-size: 20px 20px;
+  }
+
+  /* Number display */
+  .number-display {
+    @apply font-mono font-semibold tabular-nums;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+  .animate-delay-700 {
+    animation-delay: 700ms;
+  }
+}
