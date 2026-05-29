@@ -14,7 +14,7 @@ export interface UserProfile {
 export const mockUser: UserProfile = {
   id: "usr-001",
   name: "Prashant Gupta",
-  email: "prashant@antigravity.trade",
+  email: "prashant@trademind.ai",
   avatar: "PG",
   subscription: "Pro",
   joinDate: "2025-01-15",

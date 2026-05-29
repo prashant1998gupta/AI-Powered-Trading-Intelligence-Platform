@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Antigravity — AI-Powered Trading Intelligence Platform",
+  title: "TradeMind AI — AI-Powered Trading Intelligence Platform",
   description:
-    "Stop guessing, start understanding. Antigravity helps traders discover why they lose, which strategies work, and which mistakes repeat. Your AI trading coach for behavioral intelligence and performance analytics.",
+    "Stop guessing, start understanding. TradeMind AI helps traders discover why they lose, which strategies work, and which mistakes repeat. Your AI trading coach for behavioral intelligence and performance analytics.",
   keywords: [
     "trading analytics",
     "AI trading coach",
@@ -19,11 +19,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Prashant Gupta" }],
   openGraph: {
-    title: "Antigravity — AI-Powered Trading Intelligence Platform",
+    title: "TradeMind AI — AI-Powered Trading Intelligence Platform",
     description:
       "Your AI trading coach. Discover behavioral patterns, optimize strategies, and manage risk with intelligence.",
     type: "website",
-    siteName: "Antigravity",
+    siteName: "TradeMind AI",
   },
 };
 

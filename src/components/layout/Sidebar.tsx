@@ -78,7 +78,7 @@ export default function Sidebar() {
         {!collapsed && (
           <div className="animate-fade-in">
             <h1 className="text-lg font-bold gradient-text tracking-tight">
-              Antigravity
+              TradeMind AI
             </h1>
           </div>
         )}

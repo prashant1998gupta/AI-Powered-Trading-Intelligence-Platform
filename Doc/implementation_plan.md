@@ -1,4 +1,4 @@
-# Antigravity — AI-Powered Trading Intelligence Platform
+# TradeMind AI — AI-Powered Trading Intelligence Platform
 
 ## Phase 1: Frontend Foundation (Landing Page + Dashboard + Trade Journal)
 
@@ -38,7 +38,7 @@ Build a stunning, production-quality frontend with mock data to establish the vi
 > [!NOTE]
 > 1. **Authentication UI**: Should we build login/signup pages in Phase 1 (UI only, no backend), or defer to Phase 2?
 > 2. **Mobile Responsiveness**: Should the dashboard be fully responsive from Day 1, or is desktop-first acceptable for Phase 1?
-> 3. **Logo/Branding**: Do you have an existing logo for Antigravity, or should we design placeholder branding?
+> 3. **Logo/Branding**: Do you have an existing logo for TradeMind AI, or should we design placeholder branding?
 
 ---
 
@@ -49,7 +49,7 @@ Build a stunning, production-quality frontend with mock data to establish the vi
 #### [NEW] Project initialization via `create-next-app`
 
 - Initialize Next.js 14 with App Router, TypeScript, TailwindCSS v3, ESLint
-- Configure `tailwind.config.ts` with custom Antigravity design tokens (colors, fonts, spacing)
+- Configure `tailwind.config.ts` with custom TradeMind AI design tokens (colors, fonts, spacing)
 - Install dependencies: `recharts`, `lucide-react`, `clsx`, `tailwind-merge`, `class-variance-authority`
 - Initialize ShadCN UI with `shadcn-ui init`
 
@@ -86,7 +86,7 @@ Custom theme extension with:
 
 #### [NEW] `src/components/layout/Sidebar.tsx`
 - Collapsible sidebar with:
-  - Antigravity logo/branding at top
+  - TradeMind AI logo/branding at top
   - Navigation items: Dashboard, Trade Journal, Analytics, AI Coach, Strategies, Risk, Trade Replay
   - User avatar & subscription badge at bottom
   - Active state indicators with glow effect

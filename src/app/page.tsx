@@ -254,7 +254,7 @@ const testimonials = [
     name: "Arjun Mehta",
     role: "Options Trader, Mumbai",
     content:
-      "Antigravity showed me I was losing 62% of my money on afternoon trades. I stopped trading after 1 PM and my win rate jumped from 38% to 56% in just 3 weeks.",
+      "TradeMind AI showed me I was losing 62% of my money on afternoon trades. I stopped trading after 1 PM and my win rate jumped from 38% to 56% in just 3 weeks.",
     avatar: "AM",
     rating: 5,
   },
@@ -270,7 +270,7 @@ const testimonials = [
     name: "Vikram Singh",
     role: "Scalper, Delhi",
     content:
-      "I was a revenge trader and didn't even know it. Antigravity detected this pattern and saved me from blowing up my account. This tool is a game-changer.",
+      "I was a revenge trader and didn't even know it. TradeMind AI detected this pattern and saved me from blowing up my account. This tool is a game-changer.",
     avatar: "VS",
     rating: 5,
   },
@@ -295,7 +295,7 @@ export default function LandingPage() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-ag-primary to-ag-accent flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">Antigravity</span>
+            <span className="text-xl font-bold gradient-text">TradeMind AI</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-ag-text-secondary">
             <a href="#features" className="hover:text-ag-text-primary transition-colors">Features</a>
@@ -345,7 +345,7 @@ export default function LandingPage() {
             {/* Subtitle */}
             <p className="text-lg md:text-xl text-ag-text-secondary max-w-2xl mx-auto mb-10 animate-slide-up animate-delay-200">
               Most traders lose money because they don&apos;t understand their own behavior.
-              Antigravity is your AI trading coach — analyzing patterns, detecting
+              TradeMind AI is your AI trading coach — analyzing patterns, detecting
               mistakes, and improving your decision quality.
             </p>
 
@@ -501,7 +501,7 @@ export default function LandingPage() {
               Everything You Need to Trade Smarter
             </h2>
             <p className="section-subtitle mx-auto">
-              From basic journaling to advanced AI analysis — Antigravity covers
+              From basic journaling to advanced AI analysis — TradeMind AI covers
               your entire trading improvement journey.
             </p>
           </div>
@@ -576,7 +576,7 @@ export default function LandingPage() {
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-ag-bg-secondary/30 to-transparent" />
         <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <h2 className="section-title mb-16">Traders Love Antigravity</h2>
+          <h2 className="section-title mb-16">Traders Love TradeMind AI</h2>
 
           <div className="relative">
             {testimonials.map((t, i) => (
@@ -747,7 +747,7 @@ export default function LandingPage() {
                   <Zap className="w-4 h-4 text-white" />
                 </div>
                 <span className="text-lg font-bold gradient-text">
-                  Antigravity
+                  TradeMind AI
                 </span>
               </div>
               <p className="text-sm text-ag-text-secondary leading-relaxed">
@@ -789,7 +789,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-ag-border">
             <p className="text-sm text-ag-text-muted">
-              © 2025 Antigravity. Built by Prashant Gupta. All rights reserved.
+              © 2025 TradeMind AI. Built by Prashant Gupta. All rights reserved.
             </p>
             <div className="flex items-center gap-4 mt-4 md:mt-0">
               <a href="#" className="p-2 rounded-lg hover:bg-ag-bg-elevated transition-colors">
