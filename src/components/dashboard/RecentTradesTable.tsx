@@ -1,11 +1,18 @@
 "use client";
 
-import { mockTrades } from "@/data/mockTrades";
 import { cn, formatCurrencyFull, formatDate } from "@/lib/utils";
+import { Trade } from "@prisma/client";
 
-const recentTrades = mockTrades.slice(-15).reverse();
+interface RecentTradesTableProps {
+  trades: Trade[];
+}
 
-export default function RecentTradesTable() {
+export default function RecentTradesTable({ trades }: RecentTradesTableProps) {
+  // Sort by date descending and take 15
+  const recentTrades = [...trades]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 15);
+
   return (
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">

@@ -1,12 +1,23 @@
 "use client";
 
-import { getDailyPnL } from "@/data/mockTrades";
 import { cn, formatCurrencyFull } from "@/lib/utils";
+import { Trade } from "@prisma/client";
 
-const dailyData = getDailyPnL();
+interface PLCalendarHeatmapProps {
+  trades: Trade[];
+}
 
 // Group by month and week
-function getCalendarData() {
+function getCalendarData(trades: Trade[]) {
+  // First calculate daily PnL
+  const dailyPnL = new Map<string, number>();
+  trades.forEach(t => {
+    const dateStr = t.date instanceof Date ? t.date.toISOString().split('T')[0] : String(t.date).split('T')[0];
+    dailyPnL.set(dateStr, (dailyPnL.get(dateStr) || 0) + t.pnl);
+  });
+
+  const dailyData = Array.from(dailyPnL.entries()).map(([date, pnl]) => ({ date, pnl }));
+
   const months: Map<string, { date: string; pnl: number; dayOfMonth: number; dayOfWeek: number }[]> = new Map();
 
   dailyData.forEach((d) => {
@@ -38,8 +49,8 @@ function getPnlColor(pnl: number): string {
   }
 }
 
-export default function PLCalendarHeatmap() {
-  const calendarData = getCalendarData();
+export default function PLCalendarHeatmap({ trades }: PLCalendarHeatmapProps) {
+  const calendarData = getCalendarData(trades);
   const months = Array.from(calendarData.entries());
 
   return (

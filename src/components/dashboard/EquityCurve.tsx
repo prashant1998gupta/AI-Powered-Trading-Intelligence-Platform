@@ -9,10 +9,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { getEquityCurve } from "@/data/mockTrades";
+import { Trade } from "@prisma/client";
 import { formatCurrency, formatDateShort } from "@/lib/utils";
 
-const data = getEquityCurve();
+interface EquityCurveProps {
+  trades: Trade[];
+}
 
 interface TooltipProps {
   active?: boolean;
@@ -33,7 +35,29 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   );
 }
 
-export default function EquityCurve() {
+export default function EquityCurve({ trades }: EquityCurveProps) {
+  // Calculate equity curve data
+  const startingCapital = 500000;
+  const data: { date: string; equity: number }[] = [];
+  
+  const dailyPnL = new Map<string, number>();
+  trades.forEach(t => {
+    const dateStr = t.date instanceof Date ? t.date.toISOString().split('T')[0] : String(t.date).split('T')[0];
+    dailyPnL.set(dateStr, (dailyPnL.get(dateStr) || 0) + t.pnl);
+  });
+
+  const sortedDates = Array.from(dailyPnL.keys()).sort();
+  let currentEquity = startingCapital;
+
+  sortedDates.forEach(date => {
+    currentEquity += dailyPnL.get(date) || 0;
+    data.push({ date, equity: currentEquity });
+  });
+
+  if (data.length === 0) {
+    data.push({ date: new Date().toISOString().split('T')[0], equity: startingCapital });
+  }
+
   return (
     <div className="glass-card p-5">
       <h3 className="text-sm font-semibold text-ag-text-primary mb-4">

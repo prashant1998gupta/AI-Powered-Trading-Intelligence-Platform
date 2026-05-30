@@ -1,6 +1,6 @@
 "use client";
 
-import { mockInsights } from "@/data/mockInsights";
+import { Insight } from "@prisma/client";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -24,8 +24,12 @@ const colorMap = {
   danger: "text-ag-loss bg-ag-loss-dim border-ag-loss/20",
 };
 
-export default function AIInsightsPanel() {
-  const insights = mockInsights.slice(0, 5);
+interface AIInsightsPanelProps {
+  insights: Insight[];
+}
+
+export default function AIInsightsPanel({ insights }: AIInsightsPanelProps) {
+  const displayInsights = insights.slice(0, 5);
 
   return (
     <div className="glass-card p-5">
@@ -42,9 +46,17 @@ export default function AIInsightsPanel() {
       </div>
 
       <div className="space-y-3">
-        {insights.map((insight) => {
-          const Icon = iconMap[insight.type];
-          const colors = colorMap[insight.type];
+        {displayInsights.map((insight) => {
+          // Map Prisma severity to UI types
+          let uiType: "danger" | "warning" | "info" | "success" = "info";
+          if (insight.severity === "high") uiType = "danger";
+          else if (insight.severity === "medium") uiType = "warning";
+          else if (insight.severity === "low") uiType = "info";
+          
+          if (insight.type === "performance") uiType = "success"; // Override for good performance
+
+          const Icon = iconMap[uiType];
+          const colors = colorMap[uiType];
 
           return (
             <div
@@ -63,9 +75,9 @@ export default function AIInsightsPanel() {
                   <p className="text-xs text-ag-text-secondary mt-1 line-clamp-2">
                     {insight.description}
                   </p>
-                  {insight.metric && (
+                  {insight.impact && (
                     <p className="text-xs font-medium mt-1.5 number-display">
-                      {insight.metric}
+                      {insight.impact}
                     </p>
                   )}
                 </div>

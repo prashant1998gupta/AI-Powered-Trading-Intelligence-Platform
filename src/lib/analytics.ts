@@ -1,14 +1,14 @@
-import { mockTrades, type Trade, getDailyPnL } from "@/data/mockTrades";
+import { Trade } from "@prisma/client";
 
 /** Calculate overall win rate */
-export function calculateWinRate(trades: Trade[] = mockTrades): number {
+export function calculateWinRate(trades: Trade[]): number {
   if (trades.length === 0) return 0;
   const wins = trades.filter((t) => t.pnl > 0).length;
   return Math.round((wins / trades.length) * 10000) / 100;
 }
 
 /** Calculate profit factor (gross profit / gross loss) */
-export function calculateProfitFactor(trades: Trade[] = mockTrades): number {
+export function calculateProfitFactor(trades: Trade[]): number {
   const grossProfit = trades.filter((t) => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0);
   const grossLoss = Math.abs(trades.filter((t) => t.pnl < 0).reduce((sum, t) => sum + t.pnl, 0));
   if (grossLoss === 0) return grossProfit > 0 ? Infinity : 0;
@@ -16,7 +16,7 @@ export function calculateProfitFactor(trades: Trade[] = mockTrades): number {
 }
 
 /** Calculate risk-reward ratio (avg win / avg loss) */
-export function calculateRiskReward(trades: Trade[] = mockTrades): number {
+export function calculateRiskReward(trades: Trade[]): number {
   const winners = trades.filter((t) => t.pnl > 0);
   const losers = trades.filter((t) => t.pnl < 0);
   if (losers.length === 0) return Infinity;
@@ -27,14 +27,26 @@ export function calculateRiskReward(trades: Trade[] = mockTrades): number {
 
 /** Calculate maximum drawdown */
 export function calculateMaxDrawdown(
+  trades: Trade[],
   startingCapital = 500000
 ): { amount: number; percent: number } {
-  const daily = getDailyPnL();
+  // First calculate daily cumulative PnL
+  const dailyPnL = new Map<string, number>();
+  trades.forEach(t => {
+    // Note: t.date might be a Date object or string depending on where it comes from
+    const dateStr = t.date instanceof Date ? t.date.toISOString().split('T')[0] : String(t.date).split('T')[0];
+    dailyPnL.set(dateStr, (dailyPnL.get(dateStr) || 0) + t.pnl);
+  });
+
+  const sortedDates = Array.from(dailyPnL.keys()).sort();
+  let cumulative = 0;
+  
   let peak = startingCapital;
   let maxDD = 0;
 
-  daily.forEach((d) => {
-    const equity = startingCapital + d.cumulativePnl;
+  sortedDates.forEach(date => {
+    cumulative += dailyPnL.get(date) || 0;
+    const equity = startingCapital + cumulative;
     peak = Math.max(peak, equity);
     const dd = peak - equity;
     maxDD = Math.max(maxDD, dd);
@@ -47,7 +59,7 @@ export function calculateMaxDrawdown(
 }
 
 /** Get performance by strategy */
-export function getPerformanceByStrategy(trades: Trade[] = mockTrades) {
+export function getPerformanceByStrategy(trades: Trade[]) {
   const strategyMap = new Map<
     string,
     { trades: number; wins: number; pnl: number; grossProfit: number; grossLoss: number }
@@ -81,7 +93,7 @@ export function getPerformanceByStrategy(trades: Trade[] = mockTrades) {
 }
 
 /** Get performance by sector */
-export function getPerformanceBySector(trades: Trade[] = mockTrades) {
+export function getPerformanceBySector(trades: Trade[]) {
   const sectorMap = new Map<string, { trades: number; wins: number; pnl: number }>();
 
   trades.forEach((t) => {
@@ -101,7 +113,7 @@ export function getPerformanceBySector(trades: Trade[] = mockTrades) {
 }
 
 /** Get performance by instrument */
-export function getPerformanceByInstrument(trades: Trade[] = mockTrades) {
+export function getPerformanceByInstrument(trades: Trade[]) {
   const instrumentMap = new Map<string, { trades: number; wins: number; pnl: number }>();
 
   trades.forEach((t) => {
@@ -121,7 +133,7 @@ export function getPerformanceByInstrument(trades: Trade[] = mockTrades) {
 }
 
 /** Get performance by day of week */
-export function getPerformanceByDayOfWeek(trades: Trade[] = mockTrades) {
+export function getPerformanceByDayOfWeek(trades: Trade[]) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const dayMap = new Map<string, { trades: number; wins: number; pnl: number }>();
 
@@ -146,7 +158,7 @@ export function getPerformanceByDayOfWeek(trades: Trade[] = mockTrades) {
 }
 
 /** Get performance by hour */
-export function getPerformanceByHour(trades: Trade[] = mockTrades) {
+export function getPerformanceByHour(trades: Trade[]) {
   const hourMap = new Map<number, { trades: number; wins: number; pnl: number }>();
 
   trades.forEach((t) => {
@@ -169,20 +181,22 @@ export function getPerformanceByHour(trades: Trade[] = mockTrades) {
 }
 
 /** Detect revenge trading patterns */
-export function detectRevengeTrading(trades: Trade[] = mockTrades): number {
+export function detectRevengeTrading(trades: Trade[]): number {
   let count = 0;
   const sortedTrades = [...trades].sort((a, b) => {
-    const dateA = `${a.date}T${a.time}`;
-    const dateB = `${b.date}T${b.time}`;
-    return dateA.localeCompare(dateB);
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+    return dateA - dateB;
   });
 
   for (let i = 2; i < sortedTrades.length; i++) {
+    const dateI = new Date(sortedTrades[i].date).toISOString().split('T')[0];
+    const dateI1 = new Date(sortedTrades[i - 1].date).toISOString().split('T')[0];
     if (
       sortedTrades[i - 2].pnl < 0 &&
       sortedTrades[i - 1].pnl < 0 &&
       sortedTrades[i].quantity > sortedTrades[i - 1].quantity * 1.5 &&
-      sortedTrades[i].date === sortedTrades[i - 1].date
+      dateI === dateI1
     ) {
       count++;
     }
@@ -191,16 +205,17 @@ export function detectRevengeTrading(trades: Trade[] = mockTrades): number {
 }
 
 /** Detect overtrading days */
-export function detectOvertrading(trades: Trade[] = mockTrades, threshold = 6): number {
+export function detectOvertrading(trades: Trade[], threshold = 6): number {
   const dailyCount = new Map<string, number>();
   trades.forEach((t) => {
-    dailyCount.set(t.date, (dailyCount.get(t.date) || 0) + 1);
+    const dateStr = new Date(t.date).toISOString().split('T')[0];
+    dailyCount.set(dateStr, (dailyCount.get(dateStr) || 0) + 1);
   });
   return Array.from(dailyCount.values()).filter((c) => c > threshold).length;
 }
 
 /** Calculate behavioral score (0-100) */
-export function calculateBehaviorScore(trades: Trade[] = mockTrades): number {
+export function calculateBehaviorScore(trades: Trade[]): number {
   const revenge = detectRevengeTrading(trades);
   const overtrading = detectOvertrading(trades);
   const rr = calculateRiskReward(trades);
@@ -217,8 +232,8 @@ export function calculateBehaviorScore(trades: Trade[] = mockTrades): number {
 }
 
 /** Calculate risk score (0-100, higher = riskier) */
-export function calculateRiskScore(trades: Trade[] = mockTrades): number {
-  const dd = calculateMaxDrawdown();
+export function calculateRiskScore(trades: Trade[]): number {
+  const dd = calculateMaxDrawdown(trades);
   const pf = calculateProfitFactor(trades);
   const concentration = getPerformanceBySector(trades);
   const maxSectorPct = Math.max(
@@ -235,7 +250,7 @@ export function calculateRiskScore(trades: Trade[] = mockTrades): number {
 }
 
 /** Get trading heatmap data (hour x day) */
-export function getTradingHeatmap(trades: Trade[] = mockTrades) {
+export function getTradingHeatmap(trades: Trade[]) {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
   const hours = Array.from({ length: 7 }, (_, i) => i + 9);
   const heatmap: { day: string; hour: string; count: number; pnl: number }[] = [];
@@ -267,4 +282,49 @@ export function getTradingHeatmap(trades: Trade[] = mockTrades) {
   });
 
   return heatmap;
+}
+
+/** Generate full account summary */
+export function generateAccountSummary(trades: Trade[]) {
+  if (trades.length === 0) {
+    return {
+      totalPnl: 0, totalPnlPercent: 0, winRate: 0, profitFactor: 0,
+      riskReward: 0, maxDrawdown: 0, maxDrawdownPercent: 0,
+      totalTrades: 0, winningTrades: 0, losingTrades: 0,
+      averageWin: 0, averageLoss: 0, bestTrade: 0, worstTrade: 0,
+      averageTradesPerDay: 0, sharpeRatio: 0,
+      longestWinStreak: 0, longestLossStreak: 0,
+      currentStreak: 0, currentStreakType: "win" as const,
+    };
+  }
+
+  const winners = trades.filter(t => t.pnl > 0);
+  const losers = trades.filter(t => t.pnl < 0);
+  const totalPnl = trades.reduce((sum, t) => sum + t.pnl, 0);
+  const totalCapital = 500000; // Hardcoded for now
+  
+  const dd = calculateMaxDrawdown(trades, totalCapital);
+
+  return {
+    totalPnl,
+    totalPnlPercent: Math.round((totalPnl / totalCapital) * 10000) / 100,
+    winRate: calculateWinRate(trades),
+    profitFactor: calculateProfitFactor(trades),
+    riskReward: calculateRiskReward(trades),
+    maxDrawdown: dd.amount,
+    maxDrawdownPercent: dd.percent,
+    totalTrades: trades.length,
+    winningTrades: winners.length,
+    losingTrades: losers.length,
+    averageWin: winners.length ? winners.reduce((sum, t) => sum + t.pnl, 0) / winners.length : 0,
+    averageLoss: losers.length ? losers.reduce((sum, t) => sum + t.pnl, 0) / losers.length : 0,
+    bestTrade: Math.max(...trades.map(t => t.pnl), 0),
+    worstTrade: Math.min(...trades.map(t => t.pnl), 0),
+    averageTradesPerDay: trades.length / (new Set(trades.map(t => t.date.toString())).size || 1),
+    sharpeRatio: 1.2, // Mock for now
+    longestWinStreak: 0, // Mock
+    longestLossStreak: 0, // Mock
+    currentStreak: 0, // Mock
+    currentStreakType: "win" as const, // Mock
+  };
 }

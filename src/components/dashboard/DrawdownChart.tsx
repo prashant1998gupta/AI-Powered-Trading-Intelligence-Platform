@@ -9,13 +9,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { getEquityCurve } from "@/data/mockTrades";
+import { Trade } from "@prisma/client";
 import { formatDateShort } from "@/lib/utils";
 
-const data = getEquityCurve().map((d) => ({
-  ...d,
-  drawdown: Math.abs(d.drawdown),
-}));
+interface DrawdownChartProps {
+  trades: Trade[];
+}
 
 interface TooltipProps {
   active?: boolean;
@@ -36,7 +35,33 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   );
 }
 
-export default function DrawdownChart() {
+export default function DrawdownChart({ trades }: DrawdownChartProps) {
+  // Calculate drawdown data
+  const startingCapital = 500000;
+  const data: { date: string; drawdown: number }[] = [];
+  
+  const dailyPnL = new Map<string, number>();
+  trades.forEach(t => {
+    const dateStr = t.date instanceof Date ? t.date.toISOString().split('T')[0] : String(t.date).split('T')[0];
+    dailyPnL.set(dateStr, (dailyPnL.get(dateStr) || 0) + t.pnl);
+  });
+
+  const sortedDates = Array.from(dailyPnL.keys()).sort();
+  let cumulative = 0;
+  let peak = startingCapital;
+
+  sortedDates.forEach(date => {
+    cumulative += dailyPnL.get(date) || 0;
+    const equity = startingCapital + cumulative;
+    peak = Math.max(peak, equity);
+    const ddPercent = peak > 0 ? ((peak - equity) / startingCapital) * 100 : 0;
+    data.push({ date, drawdown: ddPercent });
+  });
+
+  if (data.length === 0) {
+    data.push({ date: new Date().toISOString().split('T')[0], drawdown: 0 });
+  }
+
   return (
     <div className="glass-card p-5">
       <h3 className="text-sm font-semibold text-ag-text-primary mb-4">

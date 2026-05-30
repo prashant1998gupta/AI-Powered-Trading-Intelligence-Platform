@@ -12,8 +12,11 @@ import {
 } from "recharts";
 import { getPerformanceByDayOfWeek } from "@/lib/analytics";
 import { formatCurrency } from "@/lib/utils";
+import { Trade } from "@prisma/client";
 
-const data = getPerformanceByDayOfWeek();
+interface DayOfWeekChartProps {
+  trades: Trade[];
+}
 
 interface TooltipProps {
   active?: boolean;
@@ -36,7 +39,9 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   );
 }
 
-export default function DayOfWeekChart() {
+export default function DayOfWeekChart({ trades }: DayOfWeekChartProps) {
+  const data = getPerformanceByDayOfWeek(trades);
+
   return (
     <div className="glass-card p-5">
       <h3 className="text-sm font-semibold text-ag-text-primary mb-4">
